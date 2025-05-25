@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Administrador</h2>
+  <input type="text" id="username" placeholder="Usuario" />
+  <input type="password" id="password" placeholder="Contraseña" />
+  <button onclick="login()">Iniciar sesión</button>
+
+  <script src="../scripts/modules/login.js"></script>
+</body>
+</html>

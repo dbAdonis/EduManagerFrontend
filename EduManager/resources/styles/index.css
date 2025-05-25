@@ -1,0 +1,28 @@
+/* Reset y altura base */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Contenedor principal */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header opcionalmente */
+#header-include {
+  /* Estilos de tu header si quieres, no afecta la estructura */
+}
+
+/* Contenido crece */
+main.contenido {
+  flex: 1;
+}
+
+/* Footer opcionalmente */
+#footer-include {
+  /* Estilos del footer */
+}

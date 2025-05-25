@@ -1,0 +1,51 @@
+<div class="custom-container">
+ 
+</div>
+<nav class="navbar navbar-expand-lg px-4 py-3" style="background-color: #245;">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand text-light" href="../views/index.html">
+      <img src="../resources/images/ImgNosotros.jpg" alt="Logo" style="height: 90px; width: 90px; border-radius: 50%;">
+    </a>
+
+    <!-- Botón hamburguesa -->
+    <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Contenido colapsable -->
+    
+    <div class="collapse navbar-collapse justify-content-between" id="mainNavbar">
+      <!-- Menú central -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fs-5 text-center">
+        <li class="nav-item mx-4">
+          <a id="vehiculos-link" class="nav-link text-light" href="../views/vehiculos.html">Vehículos</a>
+        </li>
+        <li class="nav-item mx-4">
+          <a id="reservas-link" class="nav-link text-light" href="../views/reservas.html">Reservas</a>
+        </li>
+        <li class="nav-item mx-4">
+          <a id="oficinas-link" class="nav-link text-light" href="../views/oficinas.html">Oficinas</a>
+        </li>
+        <li class="nav-item mx-4">
+          <a id="nosotros-link" class="nav-link text-light" href="../views/nosotros.html">Nosotros</a>
+        </li>
+        
+      </ul>
+      <button onclick="toggleDarkMode()" style="border-radius: 50%; width: 40px; height: 40px; font-size: 18px;">🌙</button>
+
+
+
+      <!-- Panel derecho --
+      <div class=" info-panel d-flex align-items-center" >
+        <button class="btn btn-outline-light">CERRAR SESIÓN</button>
+      </div> -->
+
+      <!-- En la parte derecha de la navbar -->
+      <div id="logout-container" class="info-panel d-flex align-items-center"></div>
+
+
+    </div>
+  </div>
+</nav>
+

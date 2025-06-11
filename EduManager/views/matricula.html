@@ -8,7 +8,6 @@
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
       crossorigin="anonymous"
     />
     <link
@@ -41,7 +40,7 @@
                   <option value="">Seleccione un curso</option>
                 </select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <input
                   type="date"
                   id="inputFecha"
@@ -49,7 +48,15 @@
                   placeholder="Fecha"
                 />
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
+                <select id="inputEstado" class="form-select">
+                  <option value="">Estado</option>
+                  <option value="activo">Activo</option>
+                  <option value="retirado">Retirado</option>
+                  <option value="riesgo">Riesgo</option>
+                </select>
+              </div>
+              <div class="col-md-2">
                 <button class="btn btn-success w-100" id="btnAgregarMatricula">
                   Agregar
                 </button>
@@ -66,7 +73,6 @@
                 <th>Curso</th>
                 <th>Fecha</th>
                 <th>Estado</th>
-                <th>Promedio</th>
                 <th>Acciones</th>
               </tr>
             </thead>

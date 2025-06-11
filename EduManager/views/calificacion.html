@@ -8,7 +8,6 @@
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
       crossorigin="anonymous"
     />
     <link
@@ -31,23 +30,10 @@
           <div class="mb-4">
             <h5>Agregar nueva calificación</h5>
             <div class="row g-2">
-              <div class="col-md-3">
-                <select id="inputEstudiante" class="form-select">
-                  <option value="">Seleccione un estudiante</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <select id="inputCurso" class="form-select">
-                  <option value="">Seleccione un curso</option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <select id="inputTipoEvaluacion" class="form-select">
-                  <option value="">Tipo de evaluación</option>
-                  <option value="Parcial">Parcial</option>
-                  <option value="Final">Final</option>
-                  <option value="Tarea">Tarea</option>
-                  <option value="Examen">Examen</option>
+              <div class="col-md-4">
+                <select id="inputMatricula" class="form-select">
+                  <option value="">Seleccione una matrícula</option>
+                  <!-- Se mostrará: "Estudiante - Curso" -->
                 </select>
               </div>
               <div class="col-md-2">
@@ -60,7 +46,7 @@
                   placeholder="Nota"
                 />
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <input
                   type="date"
                   id="inputFecha"
@@ -68,7 +54,7 @@
                   placeholder="Fecha"
                 />
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <button class="btn btn-success w-100" id="btnAgregarCalificacion">
                   Agregar
                 </button>
@@ -83,13 +69,12 @@
                 <th>ID</th>
                 <th>Estudiante</th>
                 <th>Curso</th>
-                <th>Tipo de Evaluación</th>
                 <th>Nota</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="tablaCalificacionesBody">
               <!-- Se llena dinámicamente por JS -->
             </tbody>
           </table>

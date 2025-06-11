@@ -36,7 +36,7 @@ function renderizarTablaProfesores() {
     tr.innerHTML = `
       <td>${prof.id_profesor}</td>
       <td>${prof.nombre}</td>
-      <td>${prof.correo_institucional}</td>
+      <td>${prof.correo}</td>
       <td>
         <button class="btn btn-sm btn-primary me-2" onclick="mostrarEditarProfesor(${prof.id_profesor})">
           <i class="bi bi-pencil"></i>

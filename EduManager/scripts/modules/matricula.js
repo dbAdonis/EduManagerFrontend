@@ -72,17 +72,12 @@ function renderizarTabla() {
       <td>${m.estudiante?.nombre ?? "Sin estudiante"}</td>
       <td>${m.curso?.nombre ?? "Sin curso"}</td>
       <td>${m.fecha_matricula ?? ""}</td>
-      <td>${m.estado ?? "Activo"}</td>
-      <td>${m.promedio ?? "N/A"}</td>
+      <td>${m.estado ?? "activo"}</td>
       <td>
-        <button class="btn btn-sm btn-primary me-2" onclick="editarMatricula(${
-          m.id_matricula
-        })">
+        <button class="btn btn-sm btn-primary me-2" onclick="editarMatricula(${m.id_matricula})">
           <i class="bi bi-pencil"></i>
         </button>
-        <button class="btn btn-sm btn-danger" onclick="eliminarMatricula(${
-          m.id_matricula
-        })">
+        <button class="btn btn-sm btn-danger" onclick="eliminarMatricula(${m.id_matricula})">
           <i class="bi bi-trash"></i>
         </button>
       </td>
@@ -95,8 +90,9 @@ function agregarMatricula() {
   const idEstudiante = document.getElementById("inputEstudiante").value;
   const idCurso = document.getElementById("inputCurso").value;
   const fecha = document.getElementById("inputFecha").value;
+  const estado = document.getElementById("inputEstado").value;
 
-  if (!idEstudiante || !idCurso || !fecha) {
+  if (!idEstudiante || !idCurso || !fecha || !estado) {
     alert("Por favor complete todos los campos.");
     return;
   }
@@ -112,8 +108,8 @@ function agregarMatricula() {
   const nuevaMatricula = {
     estudiante,
     curso,
-    fecha,
-    estado: "Activo",
+    fecha_matricula: fecha,
+    estado,
   };
 
   fetch(API_MATRICULAS_URL, {
@@ -133,23 +129,21 @@ function agregarMatricula() {
 }
 
 function editarMatricula(id) {
-  const mat = matriculas.find(m => m.id_matricula === id);
+  const mat = matriculas.find((m) => m.id_matricula === id);
   if (!mat) return;
 
   const nuevoIdEstudiante = prompt("Editar ID estudiante:", mat.estudiante?.id_estudiante ?? "");
   const nuevoIdCurso = prompt("Editar ID curso:", mat.curso?.id_curso ?? "");
   const nuevaFecha = prompt("Editar fecha de matrícula (YYYY-MM-DD):", mat.fecha_matricula ?? "");
-  const nuevoEstado = prompt("Editar estado:", mat.estado ?? "Activo");
-  const nuevoPromedio = prompt("Editar promedio:", mat.promedio ?? "");
+  const nuevoEstado = prompt("Editar estado:", mat.estado ?? "activo");
 
-  if (!nuevoIdEstudiante || !nuevoIdCurso || !nuevaFecha) {
-    alert("Estudiante, curso y fecha son obligatorios.");
+  if (!nuevoIdEstudiante || !nuevoIdCurso || !nuevaFecha || !nuevoEstado) {
+    alert("Todos los campos son obligatorios.");
     return;
   }
 
-  // Buscar el estudiante y curso en los arrays para validar y enviar la estructura correcta
-  const estudiante = estudiantes.find(e => e.id_estudiante == nuevoIdEstudiante);
-  const curso = cursos.find(c => c.id_curso == nuevoIdCurso);
+  const estudiante = estudiantes.find((e) => e.id_estudiante == nuevoIdEstudiante);
+  const curso = cursos.find((c) => c.id_curso == nuevoIdCurso);
 
   if (!estudiante || !curso) {
     alert("Estudiante o curso no válidos.");
@@ -162,7 +156,6 @@ function editarMatricula(id) {
     curso,
     fecha_matricula: nuevaFecha,
     estado: nuevoEstado,
-    promedio: nuevoPromedio || null,
   };
 
   fetch(`${API_MATRICULAS_URL}/${id}`, {
@@ -170,13 +163,12 @@ function editarMatricula(id) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(matriculaActualizada),
   })
-  .then(res => {
-    if (!res.ok) throw new Error("Error actualizando matrícula");
-    cargarMatriculas();
-  })
-  .catch(err => console.error("🔴 Error actualizando matrícula:", err));
+    .then((res) => {
+      if (!res.ok) throw new Error("Error actualizando matrícula");
+      cargarMatriculas();
+    })
+    .catch((err) => console.error("🔴 Error actualizando matrícula:", err));
 }
-
 
 function eliminarMatricula(id) {
   if (!confirm("¿Seguro que deseas eliminar esta matrícula?")) return;
@@ -196,4 +188,5 @@ function limpiarFormulario() {
   document.getElementById("inputEstudiante").value = "";
   document.getElementById("inputCurso").value = "";
   document.getElementById("inputFecha").value = "";
+  document.getElementById("inputEstado").value = "";
 }

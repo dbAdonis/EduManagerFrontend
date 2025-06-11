@@ -12,23 +12,16 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", agregarCurso);
 });
 
-/**
- * Cargar cursos desde el backend.
- */
 function cargarCursos() {
   fetch(API_CURSOS_URL)
     .then((res) => res.json())
     .then((data) => {
-      console.log("🎯 Cursos desde el backend:", data);
       cursos = data;
       renderizarTabla();
     })
     .catch((err) => console.error("🔴 Error cargando cursos:", err));
 }
 
-/**
- * Cargar lista de profesores.
- */
 function cargarProfesores() {
   fetch(API_PROFESORES_URL)
     .then((res) => res.json())
@@ -47,9 +40,6 @@ function cargarProfesores() {
     .catch((err) => console.error("🔴 Error cargando profesores:", err));
 }
 
-/**
- * Renderiza la tabla con los cursos.
- */
 function renderizarTabla() {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
@@ -60,7 +50,8 @@ function renderizarTabla() {
     tr.innerHTML = `
       <td>${curso.id_curso}</td>
       <td>${curso.nombre}</td>
-      <td>${curso.codigo}</td>
+      <td>${curso.cupo}</td>
+      <td>${curso.cupo_disponible}</td>
       <td>${curso.profesor?.nombre ?? "Sin asignar"}</td>
       <td>
         <button class="btn btn-sm btn-primary me-2" onclick="mostrarEditar(${curso.id_curso})">
@@ -75,16 +66,14 @@ function renderizarTabla() {
   });
 }
 
-/**
- * Agregar un nuevo curso.
- */
 function agregarCurso() {
   const nombre = document.getElementById("inputNombre").value.trim();
-  const codigo = document.getElementById("inputCodigo").value.trim();
+  const cupo = parseInt(document.getElementById("inputCupo").value);
+  const cupoDisponible = parseInt(document.getElementById("inputCupoDisponible").value);
   const idProfesor = document.getElementById("inputProfesor").value;
 
-  if (!nombre || !codigo || !idProfesor) {
-    alert("Por favor complete todos los campos.");
+  if (!nombre || isNaN(cupo) || isNaN(cupoDisponible) || !idProfesor) {
+    alert("Por favor complete todos los campos correctamente.");
     return;
   }
 
@@ -96,7 +85,8 @@ function agregarCurso() {
 
   const nuevoCurso = {
     nombre,
-    codigo,
+    cupo,
+    cupo_disponible: cupoDisponible,
     profesor,
   };
 
@@ -111,24 +101,22 @@ function agregarCurso() {
     })
     .then(() => {
       document.getElementById("inputNombre").value = "";
-      document.getElementById("inputCodigo").value = "";
+      document.getElementById("inputCupo").value = "";
+      document.getElementById("inputCupoDisponible").value = "";
       document.getElementById("inputProfesor").value = "";
       cargarCursos();
     })
     .catch((err) => console.error("🔴 Error agregando curso:", err));
 }
 
-/**
- * Mostrar formulario de edición de curso, incluyendo selección de profesor.
- */
 function mostrarEditar(id) {
   const curso = cursos.find((c) => c.id_curso === id);
   if (!curso) return;
 
   const nuevoNombre = prompt("Editar nombre:", curso.nombre);
-  const nuevoCodigo = prompt("Editar código:", curso.codigo);
+  const nuevoCupo = prompt("Editar cupo total:", curso.cupo);
+  const nuevoDisponible = prompt("Editar cupo disponible:", curso.cupo_disponible);
 
-  // Generar listado de profesores en formato legible
   const listaProfesores = profesores
     .map((p) => `${p.id_profesor}: ${p.nombre}`)
     .join("\n");
@@ -138,7 +126,7 @@ function mostrarEditar(id) {
     curso.profesor?.id_profesor ?? ""
   );
 
-  if (!nuevoNombre || !nuevoCodigo || !idNuevoProfesor) {
+  if (!nuevoNombre || isNaN(nuevoCupo) || isNaN(nuevoDisponible) || !idNuevoProfesor) {
     alert("Todos los campos son obligatorios.");
     return;
   }
@@ -155,7 +143,8 @@ function mostrarEditar(id) {
   const actualizado = {
     ...curso,
     nombre: nuevoNombre,
-    codigo: nuevoCodigo,
+    cupo: parseInt(nuevoCupo),
+    cupo_disponible: parseInt(nuevoDisponible),
     profesor: nuevoProfesor,
   };
 
@@ -171,10 +160,6 @@ function mostrarEditar(id) {
     .catch((err) => console.error("🔴 Error actualizando curso:", err));
 }
 
-
-/**
- * Eliminar un curso.
- */
 function eliminarCurso(id) {
   if (!confirm("¿Deseas eliminar este curso?")) return;
 

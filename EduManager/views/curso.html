@@ -23,6 +23,8 @@
       <!-- HEADER -->
       <div id="header-include"></div>
 
+      <!-- ...head permanece igual... -->
+
       <main class="contenido">
         <div class="container mt-4">
           <h2 class="mb-4">Listado de Cursos</h2>
@@ -39,12 +41,20 @@
                   placeholder="Nombre del curso"
                 />
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <input
-                  type="text"
-                  id="inputCodigo"
+                  type="number"
+                  id="inputCupo"
                   class="form-control"
-                  placeholder="Código del curso"
+                  placeholder="Cupo total"
+                />
+              </div>
+              <div class="col-md-2">
+                <input
+                  type="number"
+                  id="inputCupoDisponible"
+                  class="form-control"
+                  placeholder="Cupo disponible"
                 />
               </div>
               <div class="col-md-3">
@@ -52,7 +62,7 @@
                   <!-- Opciones llenadas dinámicamente -->
                 </select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <button class="btn btn-success w-100" id="btnAgregarCurso">
                   Agregar
                 </button>
@@ -66,7 +76,8 @@
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Código</th>
+                <th>Cupo</th>
+                <th>Disponible</th>
                 <th>Profesor</th>
                 <th>Acciones</th>
               </tr>

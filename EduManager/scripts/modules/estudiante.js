@@ -37,7 +37,7 @@ function renderizarTabla() {
             <td>${est.id_estudiante}</td>
             <td>${est.nombre}</td>
             <td>${est.correo}</td>
-            <td>${est.carnet}</td>
+            <td>${est.estado}</td>
             <td>
                 <button class="btn btn-sm btn-primary me-2" onclick="mostrarEditar(${est.id_estudiante})">
                     <i class="bi bi-pencil"></i>
@@ -57,9 +57,9 @@ function renderizarTabla() {
 function agregarEstudiante() {
   const nombre = document.getElementById("inputNombre").value;
   const correo = document.getElementById("inputCorreo").value;
-  const carnet = document.getElementById("inputCarnet").value;
+  const estado = document.getElementById("inputEstado").value;
 
-  const nuevo = { nombre, correo, carnet };
+  const nuevo = { nombre, correo, estado };
 
   fetch(API_ESTUDIANTES_URL, {
     method: "POST",
@@ -94,10 +94,10 @@ function mostrarEditar(id) {
 
   const nombre = prompt("Editar nombre:", est.nombre);
   const correo = prompt("Editar correo:", est.correo);
-  const carnet = prompt("Editar carnet:", est.carnet);
+  const estado = prompt("Editar estado:", est.estado);
 
-  if (nombre && correo && carnet) {
-    const actualizado = { ...est, nombre, correo, carnet };
+  if (nombre && correo && estado) {
+    const actualizado = { ...est, nombre, correo, estado };
 
     fetch(`${API_ESTUDIANTES_URL}/${id}`, {
       method: "PUT",
@@ -135,5 +135,5 @@ function eliminarEstudiante(id) {
 function limpiarFormulario() {
   document.getElementById("inputNombre").value = "";
   document.getElementById("inputCorreo").value = "";
-  document.getElementById("inputCarnet").value = "";
+  document.getElementById("inputEstado").value = "";
 }

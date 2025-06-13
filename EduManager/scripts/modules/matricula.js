@@ -16,9 +16,22 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", agregarMatricula);
 });
 
+function getToken() {
+  return localStorage.getItem("token");
+}
+
 function cargarEstudiantes() {
-  fetch(API_ESTUDIANTES_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_ESTUDIANTES_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       estudiantes = data;
       const select = document.getElementById("inputEstudiante");
@@ -34,8 +47,17 @@ function cargarEstudiantes() {
 }
 
 function cargarCursos() {
-  fetch(API_CURSOS_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_CURSOS_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       cursos = data;
       const select = document.getElementById("inputCurso");
@@ -51,8 +73,17 @@ function cargarCursos() {
 }
 
 function cargarMatriculas() {
-  fetch(API_MATRICULAS_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_MATRICULAS_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       matriculas = data;
       renderizarTabla();
@@ -90,6 +121,8 @@ function renderizarTabla() {
 }
 
 function agregarMatricula() {
+  const token = getToken();
+
   const idEstudiante = document.getElementById("inputEstudiante").value;
   const idCurso = document.getElementById("inputCurso").value;
   const fecha = document.getElementById("inputFecha").value;
@@ -115,7 +148,10 @@ function agregarMatricula() {
 
   fetch(API_MATRICULAS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(nuevaMatricula),
   })
     .then((res) => {
@@ -130,6 +166,8 @@ function agregarMatricula() {
 }
 
 function editarMatricula(id) {
+  const token = getToken();
+
   const mat = matriculas.find((m) => m.id_matricula === id);
   if (!mat) return;
 
@@ -161,7 +199,10 @@ function editarMatricula(id) {
 
   fetch(`${API_MATRICULAS_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(matriculaActualizada),
   })
     .then((res) => {
@@ -174,8 +215,13 @@ function editarMatricula(id) {
 function eliminarMatricula(id) {
   if (!confirm("¿Seguro que deseas eliminar esta matrícula?")) return;
 
+  const token = getToken();
+
   fetch(`${API_MATRICULAS_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   })
     .then((res) => {
       if (!res.ok) throw new Error("Error eliminando matrícula");
@@ -188,8 +234,13 @@ function eliminarMatricula(id) {
 function cancelarMatricula(id) {
   if (!confirm('¿Estás seguro de que quieres cancelar esta matrícula?')) return;
 
+  const token = getToken();
+
   fetch(`${API_MATRICULAS_URL}/${id}/cancelar`, {
-    method: 'PUT'
+    method: 'PUT',
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   })
   .then(res => {
     if (res.ok) {
@@ -201,7 +252,6 @@ function cancelarMatricula(id) {
   })
   .catch(err => alert('Error al cancelar: ' + err.message));
 }
-
 
 function limpiarFormulario() {
   document.getElementById("inputEstudiante").value = "";

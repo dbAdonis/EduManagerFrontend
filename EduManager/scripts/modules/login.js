@@ -4,7 +4,7 @@ async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  const response = await fetch("http://localhost:8080/auth/login", {
+  const response = await fetch("http://localhost:8080/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
@@ -20,7 +20,7 @@ async function login() {
     // Verificar si el usuario es 'admin' (esto debe ser una validación adicional según lo que retorne tu backend)
     if (username === "admin" && password === "admin") {
       // Si es admin, redirige al dashboard o la vista correspondiente
-      window.location.href = "../views/index.html";
+      window.location.href = "../views/estudiante.html";
     } else {
       // Si no es admin, mostramos un mensaje adecuado
       alert("Solo los administradores pueden acceder a esta área.");

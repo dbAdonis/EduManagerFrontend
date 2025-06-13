@@ -7,9 +7,17 @@ const selectTipoEvaluacion = document.getElementById('selectTipoEvaluacion');
 const btnAgregarEvaluacion = document.getElementById('btnAgregarEvaluacion');
 const btnAgregarTipo = document.getElementById('btnAgregarTipo');
 
+function getToken() {
+  return localStorage.getItem('token');
+}
+
 async function cargarMatriculas() {
   try {
-    const res = await fetch(API_MATRICULAS);
+    const token = getToken();
+    const res = await fetch(API_MATRICULAS, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
     const select = document.getElementById('inputIdMatricula');
@@ -28,7 +36,11 @@ async function cargarMatriculas() {
 
 async function cargarTiposEvaluacion() {
   try {
-    const response = await fetch(API_TIPO);
+    const token = getToken();
+    const response = await fetch(API_TIPO, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const tipos = await response.json();
     selectTipoEvaluacion.innerHTML = '<option value="">Tipo Evaluación</option>';
     tipos.forEach(tipo => {
@@ -44,7 +56,11 @@ async function cargarTiposEvaluacion() {
 
 async function listarEvaluaciones() {
   try {
-    const response = await fetch(API_EVALUACION);
+    const token = getToken();
+    const response = await fetch(API_EVALUACION, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const evaluaciones = await response.json();
     tablaEvaluaciones.innerHTML = '';
     evaluaciones.forEach(eva => {
@@ -85,13 +101,20 @@ async function agregarEvaluacion() {
   };
 
   try {
+    const token = getToken();
     const response = await fetch(API_EVALUACION, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(evaluacion)
     });
     if (response.ok) {
       await listarEvaluaciones();
+    } else {
+      const text = await response.text();
+      console.error('Error agregando evaluación:', text);
     }
   } catch (error) {
     console.error('Error agregando evaluación:', error);
@@ -100,9 +123,16 @@ async function agregarEvaluacion() {
 
 async function eliminarEvaluacion(id) {
   try {
-    const response = await fetch(`${API_EVALUACION}/${id}`, { method: 'DELETE' });
+    const token = getToken();
+    const response = await fetch(`${API_EVALUACION}/${id}`, { 
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     if (response.ok) {
       await listarEvaluaciones();
+    } else {
+      const text = await response.text();
+      console.error('Error eliminando evaluación:', text);
     }
   } catch (error) {
     console.error('Error eliminando evaluación:', error);
@@ -115,13 +145,20 @@ async function agregarTipoEvaluacion() {
   const tipo = { nombre };
 
   try {
+    const token = getToken();
     const response = await fetch(API_TIPO, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(tipo)
     });
     if (response.ok) {
       await cargarTiposEvaluacion();
+    } else {
+      const text = await response.text();
+      console.error('Error agregando tipo de evaluación:', text);
     }
   } catch (error) {
     console.error('Error agregando tipo de evaluación:', error);

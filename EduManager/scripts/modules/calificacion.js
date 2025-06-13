@@ -4,6 +4,10 @@ const API_MATRICULAS_URL = "http://localhost:8080/api/matriculas";
 let calificaciones = [];
 let matriculas = [];
 
+function getToken() {
+  return localStorage.getItem('token');
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   cargarMatriculas();
   cargarCalificaciones();
@@ -13,31 +17,42 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", agregarCalificacion);
 });
 
-function cargarMatriculas() {
-  fetch(API_MATRICULAS_URL)
-    .then(res => res.json())
-    .then(data => {
-      matriculas = data;
-      const select = document.getElementById("inputMatricula");
-      select.innerHTML = '<option value="">Seleccione una matrícula</option>';
-      data.forEach(mat => {
-        const option = document.createElement("option");
-        option.value = mat.id_matricula;
-        option.textContent = `${mat.estudiante?.nombre ?? "?"} - ${mat.curso?.nombre ?? "?"}`;
-        select.appendChild(option);
-      });
-    })
-    .catch(err => console.error("🔴 Error cargando matrículas:", err));
+async function cargarMatriculas() {
+  try {
+    const token = getToken();
+    const res = await fetch(API_MATRICULAS_URL, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    matriculas = data;
+
+    const select = document.getElementById("inputMatricula");
+    select.innerHTML = '<option value="">Seleccione una matrícula</option>';
+    data.forEach(mat => {
+      const option = document.createElement("option");
+      option.value = mat.id_matricula;
+      option.textContent = `${mat.estudiante?.nombre ?? "?"} - ${mat.curso?.nombre ?? "?"}`;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.error("🔴 Error cargando matrículas:", err);
+  }
 }
 
-function cargarCalificaciones() {
-  fetch(API_CALIFICACIONES_URL)
-    .then(res => res.json())
-    .then(data => {
-      calificaciones = data;
-      renderizarTabla();
-    })
-    .catch(err => console.error("🔴 Error cargando calificaciones:", err));
+async function cargarCalificaciones() {
+  try {
+    const token = getToken();
+    const res = await fetch(API_CALIFICACIONES_URL, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    calificaciones = data;
+    renderizarTabla();
+  } catch (err) {
+    console.error("🔴 Error cargando calificaciones:", err);
+  }
 }
 
 function renderizarTabla() {
@@ -65,7 +80,7 @@ function renderizarTabla() {
   });
 }
 
-function agregarCalificacion() {
+async function agregarCalificacion() {
   const idMatricula = document.getElementById("inputMatricula").value;
   const nota = parseFloat(document.getElementById("inputNota").value);
   const fecha = document.getElementById("inputFecha").value;
@@ -92,23 +107,25 @@ function agregarCalificacion() {
     fecha_calificacion: fecha
   };
 
-  fetch(API_CALIFICACIONES_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(nuevaCalificacion)
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Error al agregar calificación");
-      return res.json();
-    })
-    .then(() => {
-      limpiarFormulario();
-      cargarCalificaciones();
-    })
-    .catch(err => console.error("🔴 Error agregando calificación:", err));
+  try {
+    const token = getToken();
+    const res = await fetch(API_CALIFICACIONES_URL, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(nuevaCalificacion)
+    });
+    if (!res.ok) throw new Error("Error al agregar calificación");
+    await cargarCalificaciones();
+    limpiarFormulario();
+  } catch (err) {
+    console.error("🔴 Error agregando calificación:", err);
+  }
 }
 
-function mostrarEditarCalificacion(id) {
+async function mostrarEditarCalificacion(id) {
   const cal = calificaciones.find(c => c.id_calificacion === id);
   if (!cal) return;
 
@@ -126,30 +143,38 @@ function mostrarEditarCalificacion(id) {
     fecha_calificacion: nuevaFecha
   };
 
-  fetch(`${API_CALIFICACIONES_URL}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(actualizado)
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Error actualizando calificación");
-      cargarCalificaciones();
-    })
-    .catch(err => console.error("🔴 Error actualizando calificación:", err));
+  try {
+    const token = getToken();
+    const res = await fetch(`${API_CALIFICACIONES_URL}/${id}`, {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(actualizado)
+    });
+    if (!res.ok) throw new Error("Error actualizando calificación");
+    await cargarCalificaciones();
+  } catch (err) {
+    console.error("🔴 Error actualizando calificación:", err);
+  }
 }
 
-function eliminarCalificacion(id) {
+async function eliminarCalificacion(id) {
   if (!confirm("¿Seguro que deseas eliminar esta calificación?")) return;
 
-  fetch(`${API_CALIFICACIONES_URL}/${id}`, {
-    method: "DELETE"
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Error eliminando calificación");
-      calificaciones = calificaciones.filter(c => c.id_calificacion !== id);
-      renderizarTabla();
-    })
-    .catch(err => console.error("🔴 Error eliminando calificación:", err));
+  try {
+    const token = getToken();
+    const res = await fetch(`${API_CALIFICACIONES_URL}/${id}`, {
+      method: "DELETE",
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Error eliminando calificación");
+    calificaciones = calificaciones.filter(c => c.id_calificacion !== id);
+    renderizarTabla();
+  } catch (err) {
+    console.error("🔴 Error eliminando calificación:", err);
+  }
 }
 
 function limpiarFormulario() {

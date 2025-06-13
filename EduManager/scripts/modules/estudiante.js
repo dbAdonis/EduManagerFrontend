@@ -11,11 +11,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
+ * Obtener token JWT desde localStorage.
+ */
+function getToken() {
+  return localStorage.getItem("token");
+}
+
+/**
  * Cargar estudiantes desde el backend.
  */
 function cargarEstudiantes() {
-  fetch(API_ESTUDIANTES_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_ESTUDIANTES_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       estudiantes = data;
       renderizarTabla();
@@ -55,6 +71,8 @@ function renderizarTabla() {
  * Agregar nuevo estudiante.
  */
 function agregarEstudiante() {
+  const token = getToken();
+
   const nombre = document.getElementById("inputNombre").value;
   const correo = document.getElementById("inputCorreo").value;
   const estado = document.getElementById("inputEstado").value;
@@ -63,11 +81,14 @@ function agregarEstudiante() {
 
   fetch(API_ESTUDIANTES_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(nuevo),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error al agregar estudiante");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     })
     .then((estudianteCreado) => {
@@ -97,15 +118,20 @@ function mostrarEditar(id) {
   const estado = prompt("Editar estado:", est.estado);
 
   if (nombre && correo && estado) {
+    const token = getToken();
+
     const actualizado = { ...est, nombre, correo, estado };
 
     fetch(`${API_ESTUDIANTES_URL}/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(actualizado),
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Error actualizando estudiante");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         cargarEstudiantes();
       })
       .catch((err) => console.error("🔴 Error actualizando estudiante:", err));
@@ -118,11 +144,16 @@ function mostrarEditar(id) {
 function eliminarEstudiante(id) {
   if (!confirm("¿Seguro que deseas eliminar este estudiante?")) return;
 
+  const token = getToken();
+
   fetch(`${API_ESTUDIANTES_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error eliminando estudiante");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       estudiantes = estudiantes.filter((e) => e.id_estudiante !== id);
       renderizarTabla();
     })

@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
           logoutButton.textContent = "Cerrar sesión";
           logoutButton.onclick = () => {
             localStorage.removeItem("token"); // Eliminar el token
-            window.location.href = "../views/index.html"; // Redirigir al inicio
+            window.location.href = "../views/admin.html"; // Redirigir al inicio
           };
 
           infoPanel.appendChild(logoutButton);

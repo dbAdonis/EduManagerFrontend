@@ -11,11 +11,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
+ * Obtener token JWT desde localStorage.
+ */
+function getToken() {
+  return localStorage.getItem("token");
+}
+
+/**
  * Cargar profesores desde el backend.
  */
 function cargarProfesores() {
-  fetch(API_PROFESORES_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_PROFESORES_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       profesores = data;
       renderizarTablaProfesores();
@@ -54,6 +70,8 @@ function renderizarTablaProfesores() {
  * Agregar nuevo profesor.
  */
 function agregarProfesor() {
+  const token = getToken();
+
   const nombre = document.getElementById("inputNombre").value;
   const correo = document.getElementById("inputCorreo").value;
 
@@ -61,11 +79,14 @@ function agregarProfesor() {
 
   fetch(API_PROFESORES_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(nuevo),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error al agregar profesor");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     })
     .then((profesorCreado) => {
@@ -87,15 +108,20 @@ function mostrarEditarProfesor(id) {
   const correo = prompt("Editar correo institucional:", prof.correo);
 
   if (nombre && correo) {
+    const token = getToken();
+
     const actualizado = { ...prof, nombre, correo };
 
     fetch(`${API_PROFESORES_URL}/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(actualizado),
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Error actualizando profesor");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         cargarProfesores();
       })
       .catch((err) =>
@@ -110,11 +136,16 @@ function mostrarEditarProfesor(id) {
 function eliminarProfesor(id) {
   if (!confirm("¿Seguro que deseas eliminar este profesor?")) return;
 
+  const token = getToken();
+
   fetch(`${API_PROFESORES_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error eliminando profesor");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       profesores = profesores.filter((p) => p.id_profesor !== id);
       renderizarTablaProfesores();
     })

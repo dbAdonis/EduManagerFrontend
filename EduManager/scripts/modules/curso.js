@@ -12,9 +12,25 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", agregarCurso);
 });
 
+/**
+ * Obtener token JWT desde localStorage
+ */
+function getToken() {
+  return localStorage.getItem("token");
+}
+
 function cargarCursos() {
-  fetch(API_CURSOS_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_CURSOS_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       cursos = data;
       renderizarTabla();
@@ -23,8 +39,17 @@ function cargarCursos() {
 }
 
 function cargarProfesores() {
-  fetch(API_PROFESORES_URL)
-    .then((res) => res.json())
+  const token = getToken();
+
+  fetch(API_PROFESORES_URL, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then((data) => {
       profesores = data;
       const select = document.getElementById("inputProfesor");
@@ -67,6 +92,8 @@ function renderizarTabla() {
 }
 
 function agregarCurso() {
+  const token = getToken();
+
   const nombre = document.getElementById("inputNombre").value.trim();
   const cupo = parseInt(document.getElementById("inputCupo").value);
   const idProfesor = document.getElementById("inputProfesor").value;
@@ -91,11 +118,14 @@ function agregarCurso() {
 
   fetch(API_CURSOS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(nuevoCurso),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error agregando curso");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     })
     .then(() => {
@@ -137,6 +167,8 @@ function mostrarEditar(id) {
     return;
   }
 
+  const token = getToken();
+
   const actualizado = {
     ...curso,
     nombre: nuevoNombre,
@@ -146,11 +178,14 @@ function mostrarEditar(id) {
 
   fetch(`${API_CURSOS_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(actualizado),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error actualizando curso");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       cargarCursos();
     })
     .catch((err) => console.error("🔴 Error actualizando curso:", err));
@@ -159,11 +194,16 @@ function mostrarEditar(id) {
 function eliminarCurso(id) {
   if (!confirm("¿Deseas eliminar este curso?")) return;
 
+  const token = getToken();
+
   fetch(`${API_CURSOS_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error eliminando curso");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       cursos = cursos.filter((c) => c.id_curso !== id);
       renderizarTabla();
     })

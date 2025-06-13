@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     if (!token) {
       console.log("No hay token. Redirigiendo al login...");
-      window.location.href = "/admin.html";
+      window.location.href = "/login.html";
       return;
     }
   
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     } catch (e) {
       console.error("Token inválido", e);
-      window.location.href = "/admin.html";
+      window.location.href = "/login.html";
     }
   });
   

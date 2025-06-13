@@ -69,10 +69,9 @@ function renderizarTabla() {
 function agregarCurso() {
   const nombre = document.getElementById("inputNombre").value.trim();
   const cupo = parseInt(document.getElementById("inputCupo").value);
-  const cupoDisponible = parseInt(document.getElementById("inputCupoDisponible").value);
   const idProfesor = document.getElementById("inputProfesor").value;
 
-  if (!nombre || isNaN(cupo) || isNaN(cupoDisponible) || !idProfesor) {
+  if (!nombre || isNaN(cupo) || !idProfesor) {
     alert("Por favor complete todos los campos correctamente.");
     return;
   }
@@ -86,7 +85,7 @@ function agregarCurso() {
   const nuevoCurso = {
     nombre,
     cupo,
-    cupo_disponible: cupoDisponible,
+    cupo_disponible: 0,
     profesor,
   };
 
@@ -102,7 +101,6 @@ function agregarCurso() {
     .then(() => {
       document.getElementById("inputNombre").value = "";
       document.getElementById("inputCupo").value = "";
-      document.getElementById("inputCupoDisponible").value = "";
       document.getElementById("inputProfesor").value = "";
       cargarCursos();
     })
@@ -115,7 +113,6 @@ function mostrarEditar(id) {
 
   const nuevoNombre = prompt("Editar nombre:", curso.nombre);
   const nuevoCupo = prompt("Editar cupo total:", curso.cupo);
-  const nuevoDisponible = prompt("Editar cupo disponible:", curso.cupo_disponible);
 
   const listaProfesores = profesores
     .map((p) => `${p.id_profesor}: ${p.nombre}`)
@@ -126,7 +123,7 @@ function mostrarEditar(id) {
     curso.profesor?.id_profesor ?? ""
   );
 
-  if (!nuevoNombre || isNaN(nuevoCupo) || isNaN(nuevoDisponible) || !idNuevoProfesor) {
+  if (!nuevoNombre || isNaN(nuevoCupo) || !idNuevoProfesor) {
     alert("Todos los campos son obligatorios.");
     return;
   }
@@ -144,7 +141,6 @@ function mostrarEditar(id) {
     ...curso,
     nombre: nuevoNombre,
     cupo: parseInt(nuevoCupo),
-    cupo_disponible: parseInt(nuevoDisponible),
     profesor: nuevoProfesor,
   };
 

@@ -72,7 +72,7 @@ function renderizarTabla() {
       <td>${m.estudiante?.nombre ?? "Sin estudiante"}</td>
       <td>${m.curso?.nombre ?? "Sin curso"}</td>
       <td>${m.fecha_matricula ?? ""}</td>
-      <td>${m.estado ?? "activo"}</td>
+      <td>${m.estado}</td>
       <td>
         <button class="btn btn-sm btn-primary me-2" onclick="editarMatricula(${m.id_matricula})">
           <i class="bi bi-pencil"></i>
@@ -80,6 +80,9 @@ function renderizarTabla() {
         <button class="btn btn-sm btn-danger" onclick="eliminarMatricula(${m.id_matricula})">
           <i class="bi bi-trash"></i>
         </button>
+        <button onclick="cancelarMatricula(${m.id_matricula})" class="btn btn-success">
+        ❌ Cancelar
+      </button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -90,9 +93,8 @@ function agregarMatricula() {
   const idEstudiante = document.getElementById("inputEstudiante").value;
   const idCurso = document.getElementById("inputCurso").value;
   const fecha = document.getElementById("inputFecha").value;
-  const estado = document.getElementById("inputEstado").value;
 
-  if (!idEstudiante || !idCurso || !fecha || !estado) {
+  if (!idEstudiante || !idCurso || !fecha) {
     alert("Por favor complete todos los campos.");
     return;
   }
@@ -109,7 +111,6 @@ function agregarMatricula() {
     estudiante,
     curso,
     fecha_matricula: fecha,
-    estado,
   };
 
   fetch(API_MATRICULAS_URL, {
@@ -184,9 +185,26 @@ function eliminarMatricula(id) {
     .catch((err) => console.error("🔴 Error eliminando matrícula:", err));
 }
 
+function cancelarMatricula(id) {
+  if (!confirm('¿Estás seguro de que quieres cancelar esta matrícula?')) return;
+
+  fetch(`${API_MATRICULAS_URL}/${id}/cancelar`, {
+    method: 'PUT'
+  })
+  .then(res => {
+    if (res.ok) {
+      alert('Matrícula cancelada exitosamente.');
+      location.reload(); // o refrescar solo la tabla si usás AJAX
+    } else {
+      return res.text().then(msg => { throw new Error(msg); });
+    }
+  })
+  .catch(err => alert('Error al cancelar: ' + err.message));
+}
+
+
 function limpiarFormulario() {
   document.getElementById("inputEstudiante").value = "";
   document.getElementById("inputCurso").value = "";
   document.getElementById("inputFecha").value = "";
-  document.getElementById("inputEstado").value = "";
 }

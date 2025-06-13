@@ -7,6 +7,9 @@ const selectTipoEvaluacion = document.getElementById('selectTipoEvaluacion');
 const btnAgregarEvaluacion = document.getElementById('btnAgregarEvaluacion');
 const btnAgregarTipo = document.getElementById('btnAgregarTipo');
 
+let modoEdicion = false;
+let idEvaluacionActual = null;
+
 function getToken() {
   return localStorage.getItem('token');
 }
@@ -73,6 +76,9 @@ async function listarEvaluaciones() {
         <td>${eva.nota}</td>
         <td>${eva.porcentaje}</td>
         <td>
+          <button class="btn btn-primary btn-sm" onclick="editarEvaluacion(${eva.id_evaluacion})">
+            <i class="bi bi-pencil"></i>
+          </button>
           <button class="btn btn-danger btn-sm" onclick="eliminarEvaluacion(${eva.id_evaluacion})">
             <i class="bi bi-trash"></i>
           </button>
@@ -100,31 +106,70 @@ async function agregarEvaluacion() {
     porcentaje
   };
 
+  const token = getToken();
+  const url = modoEdicion ? `${API_EVALUACION}/${idEvaluacionActual}` : API_EVALUACION;
+  const method = modoEdicion ? 'PUT' : 'POST';
+
   try {
-    const token = getToken();
-    const response = await fetch(API_EVALUACION, {
-      method: 'POST',
-      headers: { 
+    const response = await fetch(url, {
+      method,
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(evaluacion)
     });
+
     if (response.ok) {
       await listarEvaluaciones();
+      resetFormulario();
     } else {
       const text = await response.text();
-      console.error('Error agregando evaluación:', text);
+      console.error(`Error ${modoEdicion ? 'actualizando' : 'agregando'} evaluación:`, text);
     }
   } catch (error) {
-    console.error('Error agregando evaluación:', error);
+    console.error(`Error ${modoEdicion ? 'actualizando' : 'agregando'} evaluación:`, error);
   }
+}
+
+async function editarEvaluacion(id) {
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_EVALUACION}/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const eva = await response.json();
+
+    document.getElementById('inputIdMatricula').value = eva.matricula.id_matricula;
+    selectTipoEvaluacion.value = eva.tipoEvaluacion.id_tipo;
+    document.getElementById('inputDescripcion').value = eva.descripcion;
+    document.getElementById('inputNota').value = eva.nota;
+    document.getElementById('inputPorcentaje').value = eva.porcentaje;
+
+    modoEdicion = true;
+    idEvaluacionActual = id;
+    btnAgregarEvaluacion.textContent = 'Guardar Cambios';
+  } catch (error) {
+    console.error('Error al obtener evaluación:', error);
+  }
+}
+
+function resetFormulario() {
+  document.getElementById('inputIdMatricula').value = '';
+  selectTipoEvaluacion.value = '';
+  document.getElementById('inputDescripcion').value = '';
+  document.getElementById('inputNota').value = '';
+  document.getElementById('inputPorcentaje').value = '';
+  btnAgregarEvaluacion.textContent = 'Agregar Evaluación';
+  modoEdicion = false;
+  idEvaluacionActual = null;
 }
 
 async function eliminarEvaluacion(id) {
   try {
     const token = getToken();
-    const response = await fetch(`${API_EVALUACION}/${id}`, { 
+    const response = await fetch(`${API_EVALUACION}/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -148,7 +193,7 @@ async function agregarTipoEvaluacion() {
     const token = getToken();
     const response = await fetch(API_TIPO, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
